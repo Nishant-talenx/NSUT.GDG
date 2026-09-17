@@ -1,0 +1,1921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f7f8f5">
+<title>Orbit | Find Your People</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap');
+
+:root {
+  --bg: #f7f8f5;
+  --surface: #ffffff;
+  --surface2: #edf4f0;
+  --text: #172943;
+  --muted: #718198;
+  --border: #e2e8e5;
+  --primary: #14243d;
+  --mint: #c9f1e4;
+  --green: #167d67;
+  --danger: #c44755;
+  --shadow: 0 10px 35px rgba(20,36,61,.06);
+}
+
+body.dark {
+  --bg: #101722;
+  --surface: #182333;
+  --surface2: #223244;
+  --text: #edf4fa;
+  --muted: #a6b5c7;
+  --border: #2b3b4e;
+  --primary: #dff7ef;
+  --mint: #254d46;
+  --green: #8ce0c7;
+  --danger: #ff8790;
+  --shadow: 0 10px 35px rgba(0,0,0,.16);
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "DM Sans", sans-serif;
+  transition: background .25s, color .25s;
+}
+
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #70b9ff;
+  outline-offset: 3px;
+}
+
+button:disabled { opacity: .55; cursor: not-allowed; }
+
+.app {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 225px minmax(0,1fr);
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding: 27px 17px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 5;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 10px;
+  margin-bottom: 43px;
+}
+
+.brand-mark {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  background: var(--primary);
+  color: var(--bg);
+  border-radius: 13px;
+  font-size: 23px;
+}
+
+.brand h2 {
+  font: 800 25px Manrope, sans-serif;
+  margin: 0;
+  letter-spacing: -1px;
+}
+
+.brand small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.nav-label {
+  margin: 0 12px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 1.4px;
+}
+
+.nav { display: grid; gap: 7px; }
+
+.nav button {
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: var(--muted);
+  padding: 13px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: .2s;
+}
+
+.nav button:hover,
+.nav button.active {
+  background: var(--surface2);
+  color: var(--text);
+}
+
+.nav button.active { font-weight: 700; }
+
+.nav-icon {
+  width: 20px;
+  text-align: center;
+  font-size: 18px;
+}
+
+.sidebar-bottom { margin-top: auto; }
+
+.sidebar-promo {
+  background: var(--surface2);
+  border-radius: 15px;
+  padding: 17px;
+}
+
+.sidebar-promo .emoji { font-size: 25px; }
+
+.sidebar-promo h3 {
+  font: 800 16px/1.4 Manrope;
+  margin: 12px 0 7px;
+}
+
+.sidebar-promo p {
+  color: var(--muted);
+  line-height: 1.6;
+  font-size: 12px;
+}
+
+.sidebar-promo button {
+  border: 0;
+  border-radius: 9px;
+  background: var(--primary);
+  color: var(--bg);
+  padding: 11px;
+  width: 100%;
+  font-weight: 700;
+}
+
+main {
+  min-width: 0;
+  padding: 22px clamp(15px,3vw,42px) 50px;
+  max-width: 1700px;
+  width: 100%;
+  margin: auto;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.searchbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: min(490px,65%);
+  padding: 0 14px;
+  height: 45px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.searchbox input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+}
+
+.searchbox input::placeholder { color: var(--muted); }
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  background: var(--mint);
+  border-radius: 50%;
+  font-size: 21px;
+}
+
+.profile-name { font-weight: 700; font-size: 12px; }
+.profile-sub { color: var(--muted); font-size: 10px; margin-top: 4px; }
+
+.icon-button {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 10px;
+  width: 41px;
+  height: 41px;
+  font-size: 18px;
+}
+
+.welcome {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.eyebrow {
+  display: inline-block;
+  padding: 7px 12px;
+  border-radius: 20px;
+  background: var(--mint);
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 11px;
+}
+
+h1 {
+  font: 800 clamp(27px,3.3vw,39px)/1.2 Manrope;
+  letter-spacing: -1.5px;
+  margin: 0;
+}
+
+.welcome p {
+  color: var(--muted);
+  margin: 10px 0 0;
+  line-height: 1.6;
+}
+
+.welcome-note {
+  max-width: 230px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+  font-style: italic;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 14px;
+  margin-bottom: 36px;
+}
+
+.stat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 19px;
+  box-shadow: var(--shadow);
+}
+
+.stat-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.stat-icon { font-size: 20px; }
+
+.stat strong {
+  display: block;
+  font: 800 29px Manrope;
+  margin: 13px 0 4px;
+}
+
+.stat small { color: var(--muted); }
+
+.section { margin: 35px 0; }
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 17px;
+}
+
+.section-head h2 {
+  font: 800 21px Manrope;
+  letter-spacing: -.6px;
+  margin: 0;
+}
+
+.section-head p {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 6px 0 0;
+}
+
+.text-button {
+  border: 0;
+  background: transparent;
+  color: var(--green);
+  font-weight: 700;
+  padding: 9px 0;
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.filter {
+  border: 1px solid var(--border);
+  border-radius: 25px;
+  padding: 9px 15px;
+  color: var(--muted);
+  background: var(--surface);
+  font-size: 12px;
+  transition: .2s;
+}
+
+.filter:hover { transform: translateY(-2px); }
+
+.filter.active {
+  background: var(--primary);
+  color: var(--bg);
+  border-color: var(--primary);
+}
+
+.society-grid {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 17px;
+}
+
+.society-card {
+  min-width: 0;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  box-shadow: var(--shadow);
+  transition: transform .22s, box-shadow .22s;
+  animation: rise .35s both;
+}
+
+.society-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 17px 38px rgba(20,36,61,.12);
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card-cover {
+  height: 115px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cover,#dff5ed);
+  overflow: hidden;
+}
+
+.cover-shape {
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  border: 1px solid #ffffff70;
+  border-radius: 45%;
+  transform: rotate(35deg);
+}
+
+.cover-shape::before,
+.cover-shape::after {
+  content: "";
+  position: absolute;
+  inset: 17px;
+  border: 1px solid #ffffff80;
+  border-radius: 45%;
+}
+
+.cover-shape::after { inset: 36px; }
+
+.card-emoji {
+  z-index: 1;
+  font-size: 43px;
+  filter: drop-shadow(0 5px 7px #0002);
+}
+
+.match-badge {
+  position: absolute;
+  z-index: 2;
+  right: 10px;
+  top: 10px;
+  background: var(--surface);
+  color: var(--green);
+  border-radius: 20px;
+  padding: 6px 9px;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.card-body { padding: 17px; }
+
+.category-label {
+  text-transform: uppercase;
+  color: var(--muted);
+  font-size: 9px;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+.card-body h3 {
+  font: 800 16px Manrope;
+  margin: 7px 0;
+}
+
+.card-description {
+  min-height: 54px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 10px 0 15px;
+}
+
+.card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 11px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-top: 13px;
+}
+
+.open-label {
+  color: var(--green);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.card-actions { display: flex; gap: 7px; }
+
+.secondary-button,
+.save-button {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 9px;
+  padding: 10px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  transition: .2s;
+}
+
+.secondary-button:hover { background: var(--surface2); }
+
+.save-button { width: 39px; font-size: 16px; padding: 7px; }
+.save-button.saved { color: #d94d6a; background: #fff0f3; }
+
+.empty-state {
+  grid-column: 1/-1;
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: 15px;
+  text-align: center;
+  padding: 50px 20px;
+  color: var(--muted);
+}
+
+.empty-state h3 { color: var(--text); margin: 0 0 8px; }
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 17px;
+}
+
+.feature {
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  padding: 22px;
+  box-shadow: var(--shadow);
+}
+
+.feature h3 {
+  font: 800 17px Manrope;
+  margin: 0;
+}
+
+.feature > p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.quiz-options { display: flex; flex-wrap: wrap; gap: 8px; margin: 17px 0; }
+
+.quiz-option {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  padding: 10px 13px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+.quiz-option.selected {
+  border-color: var(--green);
+  background: var(--mint);
+  color: var(--green);
+  font-weight: 700;
+}
+
+.primary-button {
+  border: 0;
+  border-radius: 10px;
+  padding: 12px 17px;
+  background: var(--primary);
+  color: var(--bg);
+  font-weight: 700;
+  transition: .2s;
+}
+
+.primary-button:hover { transform: translateY(-2px); }
+
+.quiz-result {
+  display: none;
+  margin-top: 15px;
+  padding: 15px;
+  border-radius: 12px;
+  background: var(--surface2);
+  line-height: 1.6;
+}
+
+.quiz-result.show { display: block; animation: rise .25s; }
+
+.quiz-result button {
+  display: block;
+  margin-top: 10px;
+  border: 0;
+  background: transparent;
+  color: var(--green);
+  font-weight: 800;
+  padding: 5px 0;
+}
+
+.deadline-item,
+.application-item {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.deadline-item:last-child,
+.application-item:last-child { border-bottom: 0; }
+
+.date-box {
+  min-width: 47px;
+  padding: 9px 5px;
+  border-radius: 10px;
+  text-align: center;
+  background: var(--surface2);
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.date-box small {
+  display: block;
+  color: var(--muted);
+  font-size: 9px;
+  margin-top: 4px;
+}
+
+.item-info { flex: 1; min-width: 0; }
+
+.item-info strong { font-size: 12px; display: block; }
+.item-info small { display: block; color: var(--muted); font-size: 10px; margin-top: 5px; }
+
+.countdown-pill {
+  white-space: nowrap;
+  color: var(--green);
+  background: var(--mint);
+  border-radius: 20px;
+  padding: 6px 9px;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.application-status {
+  border-radius: 20px;
+  padding: 6px 9px;
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--surface2);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.status-shortlisted { background: #dcf6e9; color: #187b54; }
+.status-review { background: #e5efff; color: #386eb5; }
+.status-interview { background: #f0e6ff; color: #7c4db1; }
+
+.application-item button {
+  border: 0;
+  background: transparent;
+  color: var(--green);
+  font-size: 18px;
+}
+
+.footer {
+  border-top: 1px solid var(--border);
+  padding-top: 25px;
+  margin-top: 45px;
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+/* Modal and forms */
+
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: rgba(5,15,29,.65);
+  backdrop-filter: blur(5px);
+  padding: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-backdrop.show { display: flex; }
+
+.modal {
+  width: min(590px,100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 25px;
+  animation: rise .2s;
+}
+
+.modal-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-close {
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  width: 37px;
+  height: 37px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 20px;
+}
+
+.modal h2 {
+  font: 800 25px Manrope;
+  letter-spacing: -.7px;
+  margin: 15px 0 9px;
+}
+
+.modal p { color: var(--muted); line-height: 1.7; font-size: 13px; }
+
+.modal h3 { font: 800 15px Manrope; margin: 22px 0 10px; }
+
+.modal ul { color: var(--muted); line-height: 1.9; padding-left: 20px; font-size: 13px; }
+
+.modal-stats {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 9px;
+  margin: 20px 0;
+}
+
+.modal-stat { padding: 13px; background: var(--surface2); border-radius: 10px; }
+.modal-stat strong { display: block; font: 800 21px Manrope; }
+.modal-stat small { color: var(--muted); font-size: 10px; }
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.form-field { min-width: 0; margin-bottom: 14px; }
+
+.form-field.full { grid-column: 1/-1; }
+
+.form-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 7px;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  padding: 12px;
+  border-radius: 9px;
+  outline: 0;
+}
+
+.form-field textarea { min-height: 105px; resize: vertical; }
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus { border-color: var(--green); }
+
+.field-error {
+  color: var(--danger);
+  font-size: 11px;
+  margin-top: 5px;
+  min-height: 14px;
+}
+
+.form-error {
+  display: none;
+  background: #fff0f0;
+  color: #a83242;
+  padding: 12px;
+  border-radius: 9px;
+  margin-bottom: 12px;
+  font-size: 12px;
+}
+
+.form-error.show { display: block; }
+
+.success-screen {
+  display: none;
+  text-align: center;
+  padding: 35px 10px;
+}
+
+.success-screen.show { display: block; animation: rise .3s; }
+
+.success-icon {
+  font-size: 55px;
+  margin-bottom: 15px;
+}
+
+.success-screen h2 { margin-bottom: 8px; }
+
+.success-screen p { color: var(--muted); line-height: 1.7; }
+
+.success-screen button { margin-top: 15px; }
+
+.toast {
+  position: fixed;
+  z-index: 40;
+  bottom: 22px;
+  right: 22px;
+  max-width: calc(100vw - 40px);
+  padding: 14px 18px;
+  border-radius: 11px;
+  background: var(--primary);
+  color: var(--bg);
+  box-shadow: var(--shadow);
+  display: none;
+}
+
+.toast.show { display: block; animation: rise .2s; }
+
+.skeleton {
+  height: 300px;
+  border-radius: 15px;
+  background: linear-gradient(100deg,var(--surface2) 30%,var(--border) 50%,var(--surface2) 70%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+}
+
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+@media(max-width:1150px) {
+  .app { grid-template-columns: 190px minmax(0,1fr); }
+  .society-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+
+@media(max-width:800px) {
+  .app { grid-template-columns: 1fr; }
+  .sidebar {
+    position: sticky;
+    height: auto;
+    top: 0;
+    padding: 11px 15px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .brand { margin: 0; }
+  .brand-mark { width: 35px; height: 35px; }
+  .brand h2 { font-size: 22px; }
+  .sidebar .nav-label,
+  .sidebar .nav,
+  .sidebar-bottom { display: none; }
+  .welcome-note { display: none; }
+  main { padding-top: 17px; }
+}
+
+@media(max-width:560px) {
+  main { padding: 13px 13px 35px; }
+  .topbar { margin-bottom: 23px; }
+  .searchbox { width: 100%; }
+  .profile-name,.profile-sub { display: none; }
+  .welcome { margin-bottom: 20px; }
+  h1 { font-size: 28px; }
+  .welcome p { font-size: 12px; }
+  .stats { gap: 8px; }
+  .stat { padding: 13px 10px; }
+  .stat-top { font-size: 10px; }
+  .stat strong { font-size: 23px; }
+  .stat small { font-size: 9px; }
+  .society-grid { grid-template-columns: 1fr; gap: 13px; }
+  .card-cover { height: 105px; }
+  .card-description { min-height: 0; }
+  .feature-grid { grid-template-columns: 1fr; }
+  .section-head h2 { font-size: 19px; }
+  .section-head p { line-height: 1.5; }
+  .form-grid { grid-template-columns: 1fr; gap: 0; }
+  .form-field.full { grid-column: auto; }
+  .modal { padding: 19px; }
+  .modal-stats { gap: 6px; }
+  .modal-stat { padding: 10px; }
+  .modal-stat strong { font-size: 18px; }
+  .modal-stat small { font-size: 9px; }
+  .footer { flex-direction: column; }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-mark">✦</div>
+    <div>
+      <h2>Orbit</h2>
+      <small>Campus communities</small>
+    </div>
+  </div>
+
+  <div class="nav-label">YOUR CAMPUS</div>
+
+  <nav class="nav" aria-label="Main navigation">
+    <button class="active" data-section="home"><span class="nav-icon">⌂</span>Overview</button>
+    <button data-section="discover"><span class="nav-icon">⌕</span>Discover societies</button>
+    <button data-section="timeline"><span class="nav-icon">▦</span>Recruitment dates</button>
+    <button data-section="applications"><span class="nav-icon">▤</span>My applications</button>
+    <button data-section="quiz"><span class="nav-icon">✧</span>Find my fit</button>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <div class="sidebar-promo">
+      <div class="emoji">🌱</div>
+      <h3>Your campus story starts here.</h3>
+      <p>Find your people, build your skills, and make your first year count.</p>
+      <button id="sidebarExplore">Explore societies →</button>
+    </div>
+  </div>
+</aside>
+
+<main id="home">
+
+  <header class="topbar">
+    <label class="searchbox">
+      <span aria-hidden="true">⌕</span>
+      <input id="searchInput" type="search" placeholder="Search societies, skills, roles..." aria-label="Search societies">
+    </label>
+
+    <div class="profile">
+      <button class="icon-button" id="themeToggle" aria-label="Toggle dark mode" title="Toggle dark mode">☾</button>
+      <div class="avatar" aria-hidden="true">🎓</div>
+      <div>
+        <div class="profile-name">Aarav Sharma</div>
+        <div class="profile-sub">First year · Computer Science</div>
+      </div>
+    </div>
+  </header>
+
+  <section class="welcome">
+    <div>
+      <span class="eyebrow">YOUR CAMPUS, YOUR WAY</span>
+      <h1>Find your people. <br>Build your orbit. ✨</h1>
+      <p>Discover student societies, explore opportunities, and take your first step.</p>
+    </div>
+    <div class="welcome-note">“The best part of campus is the people you meet along the way.”</div>
+  </section>
+
+  <section class="stats" aria-label="Your dashboard statistics">
+    <div class="stat">
+      <div class="stat-top"><span>Societies to explore</span><span class="stat-icon">♧</span></div>
+      <strong id="totalSocieties">8</strong>
+      <small>Across different interests</small>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><span>Saved societies</span><span class="stat-icon">♡</span></div>
+      <strong id="savedCount">0</strong>
+      <small>Your personal shortlist</small>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><span>Applications</span><span class="stat-icon">↗</span></div>
+      <strong id="applicationCount">0</strong>
+      <small>Tracked in this browser</small>
+    </div>
+  </section>
+
+  <section class="section" id="discover">
+    <div class="section-head">
+      <div>
+        <h2>Discover societies</h2>
+        <p>Find a community that matches your interests and ambitions.</p>
+      </div>
+      <button class="text-button" id="resetFilters">Reset filters ↗</button>
+    </div>
+
+    <div class="filters" id="filters" aria-label="Filter by category">
+      <button class="filter active" data-filter="All">All societies</button>
+      <button class="filter" data-filter="Technology">Technology</button>
+      <button class="filter" data-filter="Culture">Culture</button>
+      <button class="filter" data-filter="Sports">Sports</button>
+      <button class="filter" data-filter="Design">Design</button>
+      <button class="filter" data-filter="Literature">Literature</button>
+    </div>
+
+    <div class="society-grid" id="societyGrid" aria-live="polite"></div>
+  </section>
+
+  <section class="section feature-grid" id="quiz">
+
+    <div class="feature">
+      <span class="eyebrow">PERSONALIZED DISCOVERY</span>
+      <h3>Not sure where you fit?</h3>
+      <p>Choose what sounds like you. Orbit will suggest a society to explore.</p>
+
+      <div class="quiz-options" id="quizOptions">
+        <button class="quiz-option" data-interest="building">🧑‍💻 Building things</button>
+        <button class="quiz-option" data-interest="creating">🎨 Creating</button>
+        <button class="quiz-option" data-interest="performing">🎤 Performing</button>
+        <button class="quiz-option" data-interest="competing">🏆 Competing</button>
+        <button class="quiz-option" data-interest="ideas">💡 Ideas & startups</button>
+        <button class="quiz-option" data-interest="writing">📚 Writing</button>
+      </div>
+
+      <button class="primary-button" id="findMatch">Find my society →</button>
+
+      <div class="quiz-result" id="quizResult" aria-live="polite"></div>
+    </div>
+
+    <div class="feature" id="timeline">
+      <div class="section-head">
+        <div>
+          <h3>Recruitment timeline</h3>
+          <p>Keep track of upcoming application deadlines.</p>
+        </div>
+      </div>
+      <div id="timelineList"></div>
+    </div>
+  </section>
+
+  <section class="section" id="applications">
+    <div class="section-head">
+      <div>
+        <h2>My applications</h2>
+        <p>Follow the opportunities you've applied to.</p>
+      </div>
+      <button class="text-button" id="clearApplications">Clear demo data</button>
+    </div>
+
+    <div class="feature" id="applicationPanel">
+      <div id="applicationList"></div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span>✦ Orbit · Student society discovery</span>
+    <span>Demo project · Sample society information</span>
+  </footer>
+
+</main>
+</div>
+
+<!-- Society details modal -->
+<div class="modal-backdrop" id="detailsBackdrop" role="dialog" aria-modal="true" aria-labelledby="detailsTitle">
+  <div class="modal">
+    <div class="modal-top">
+      <span class="eyebrow" id="detailsCategory">SOCIETY</span>
+      <button class="modal-close" data-close="detailsBackdrop" aria-label="Close details">×</button>
+    </div>
+
+    <h2 id="detailsTitle"></h2>
+    <p id="detailsDescription"></p>
+
+    <div class="modal-stats">
+      <div class="modal-stat"><strong id="detailsOpen"></strong><small>Open roles</small></div>
+      <div class="modal-stat"><strong id="detailsHours"></strong><small>Hours per week</small></div>
+      <div class="modal-stat"><strong id="detailsDeadline"></strong><small>Days left</small></div>
+    </div>
+
+    <h3>About the society</h3>
+    <p id="detailsAbout"></p>
+
+    <h3>What you'll do</h3>
+    <ul id="detailsActivities"></ul>
+
+    <h3>Recruitment criteria</h3>
+    <p id="detailsCriteria"></p>
+
+    <h3>Open roles</h3>
+    <ul id="detailsRoles"></ul>
+
+    <div class="card-actions">
+      <button class="secondary-button" id="detailsSave">♡ Save</button>
+      <button class="primary-button" id="detailsApply">Apply now →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Application form modal -->
+<div class="modal-backdrop" id="applyBackdrop" role="dialog" aria-modal="true" aria-labelledby="applyTitle">
+  <div class="modal">
+
+    <div id="applicationFormView">
+      <div class="modal-top">
+        <span class="eyebrow">SOCIETY APPLICATION</span>
+        <button class="modal-close" data-close="applyBackdrop" aria-label="Close application">×</button>
+      </div>
+
+      <h2 id="applyTitle">Let's get you involved.</h2>
+      <p id="applySubtitle">Tell the society a little about yourself.</p>
+
+      <div class="form-error" id="formError" role="alert"></div>
+
+      <form id="applicationForm" novalidate>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="appName">Full name *</label>
+            <input id="appName" name="name" autocomplete="name" placeholder="Your full name">
+            <div class="field-error" id="nameError"></div>
+          </div>
+
+          <div class="form-field">
+            <label for="appYear">Year of study *</label>
+            <select id="appYear" name="year">
+              <option value="">Select year</option>
+              <option>1st Year</option>
+              <option>2nd Year</option>
+              <option>3rd Year</option>
+              <option>4th Year</option>
+              <option>Other</option>
+            </select>
+            <div class="field-error" id="yearError"></div>
+          </div>
+
+          <div class="form-field">
+            <label for="appBranch">Branch *</label>
+            <input id="appBranch" name="branch" placeholder="e.g. Information Technology">
+            <div class="field-error" id="branchError"></div>
+          </div>
+
+          <div class="form-field">
+            <label for="appRole">Preferred role *</label>
+            <select id="appRole" name="role">
+              <option value="">Choose a role</option>
+            </select>
+            <div class="field-error" id="roleError"></div>
+          </div>
+
+          <div class="form-field full">
+            <label for="appWhy">Why do you want to join? *</label>
+            <textarea id="appWhy" name="why" maxlength="600" placeholder="Tell us what interests you and what you'd like to contribute..."></textarea>
+            <div class="field-error" id="whyError"></div>
+            <small style="color:var(--muted);font-size:10px" id="charCount">0 / 600 characters</small>
+          </div>
+
+        </div>
+
+        <button class="primary-button" type="submit" style="width:100%">Submit application →</button>
+        <p style="font-size:10px;margin-bottom:0">Demo only: your application stays in this browser session. No backend submission.</p>
+      </form>
+    </div>
+
+    <div class="success-screen" id="successScreen" aria-live="polite">
+      <div class="success-icon">🎉</div>
+      <h2>Application recorded!</h2>
+      <p id="successMessage"></p>
+      <button class="primary-button" id="successDone">Back to Orbit</button>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+/* =========================================================
+   ORBIT — SAMPLE DATA
+   All society data is seeded locally in JavaScript.
+   ========================================================= */
+
+const societies = [
+  {
+    id: "developers",
+    name: "Developer's Club",
+    category: "Technology",
+    emoji: "💻",
+    cover: "#d7efe8",
+    match: 96,
+    open: 18,
+    hours: 8,
+    deadline: "2026-09-23",
+    description: "Build real projects, learn from peers, and explore modern technologies.",
+    about: "A community for students who love solving problems, experimenting with code, and turning ideas into useful software.",
+    activities: ["Collaborative software projects", "Peer-led coding sessions", "Hackathons and technical workshops"],
+    criteria: "Open to students from all branches and experience levels. Curiosity, consistency, and willingness to learn matter.",
+    roles: ["Web Development", "App Development", "Competitive Programming", "Community & Events"],
+    skills: ["building", "ideas"]
+  },
+  {
+    id: "robotics",
+    name: "Robotics Society",
+    category: "Technology",
+    emoji: "🤖",
+    cover: "#e4e4fb",
+    match: 91,
+    open: 10,
+    hours: 9,
+    deadline: "2026-09-21",
+    description: "Design, build, and test machines that bring ideas into the real world.",
+    about: "Explore robotics through practical projects that combine electronics, programming, and mechanical design.",
+    activities: ["Build and test robotics projects", "Embedded systems workshops", "Technical competitions"],
+    criteria: "Beginners are welcome. Interest in hardware, software, or hands-on experimentation is helpful.",
+    roles: ["Robotics & Embedded Systems", "Software", "Mechanical Design", "Research & Documentation"],
+    skills: ["building", "competing"]
+  },
+  {
+    id: "ecell",
+    name: "Entrepreneurship Cell",
+    category: "Technology",
+    emoji: "🚀",
+    cover: "#ffead4",
+    match: 88,
+    open: 14,
+    hours: 6,
+    deadline: "2026-09-20",
+    description: "Turn ideas into experiments, meet builders, and explore entrepreneurship.",
+    about: "A student community for exploring startups, innovation, business models, and entrepreneurial thinking.",
+    activities: ["Startup workshops", "Founder conversations", "Pitch events and student ventures"],
+    criteria: "Open to curious students who enjoy taking initiative, communicating, and testing ideas.",
+    roles: ["Startup & Operations", "Marketing", "Research", "Events & Partnerships"],
+    skills: ["ideas", "creating"]
+  },
+  {
+    id: "photography",
+    name: "Photography Society",
+    category: "Culture",
+    emoji: "📸",
+    cover: "#f9e2e7",
+    match: 82,
+    open: 7,
+    hours: 5,
+    deadline: "2026-09-28",
+    description: "Capture stories, build your portfolio, and show campus life through your lens.",
+    about: "A creative community for capturing campus moments, developing visual storytelling, and learning photography together.",
+    activities: ["Photo walks and campus shoots", "Editing workshops", "Exhibitions and event coverage"],
+    criteria: "No professional camera required. Students can apply with a phone camera and an interest in visual storytelling.",
+    roles: ["Photography", "Photo Editing", "Social Media", "Event Coverage"],
+    skills: ["creating", "performing"]
+  },
+  {
+    id: "music",
+    name: "Music Society",
+    category: "Culture",
+    emoji: "🎸",
+    cover: "#e4defa",
+    match: 78,
+    open: 8,
+    hours: 5,
+    deadline: "2026-10-02",
+    description: "Make music with others, perform, and create memorable campus events.",
+    about: "A welcoming space for musicians, singers, and students who want to help bring music to campus.",
+    activities: ["Jam sessions", "Live performances", "Music production and events"],
+    criteria: "Open to different experience levels. Enthusiasm, collaboration, and a love of music are welcome.",
+    roles: ["Vocalist", "Instrumentalist", "Music Production", "Event Management"],
+    skills: ["performing", "creating"]
+  },
+  {
+    id: "sports",
+    name: "Sports Club",
+    category: "Sports",
+    emoji: "🏆",
+    cover: "#dcecff",
+    match: 76,
+    open: 12,
+    hours: 5,
+    deadline: "2026-09-30",
+    description: "Stay active, compete, and help bring the campus community together.",
+    about: "A student group supporting sporting activities, recreational events, and inter-college competitions.",
+    activities: ["Inter-college tournaments", "Recreational sports sessions", "Sports events and volunteering"],
+    criteria: "Open to students interested in sports, teamwork, fitness, or sports event organization.",
+    roles: ["Athlete", "Event Management", "Sports Media", "Operations"],
+    skills: ["competing", "performing"]
+  },
+  {
+    id: "design",
+    name: "Design Collective",
+    category: "Design",
+    emoji: "🎨",
+    cover: "#ffedcc",
+    match: 85,
+    open: 9,
+    hours: 7,
+    deadline: "2026-10-03",
+    description: "Create, collaborate, and bring ideas to life through thoughtful design.",
+    about: "A community of students exploring visual design, user experience, creative thinking, and digital products.",
+    activities: ["Design challenges and critiques", "Product design projects", "Portfolio reviews"],
+    criteria: "No advanced portfolio required for beginners. Curiosity, empathy, and willingness to iterate are valued.",
+    roles: ["UI/UX Design", "Graphic Design", "Illustration", "Motion Design"],
+    skills: ["creating", "building"]
+  },
+  {
+    id: "literary",
+    name: "Literary Society",
+    category: "Literature",
+    emoji: "📚",
+    cover: "#dcefe0",
+    match: 72,
+    open: 6,
+    hours: 4,
+    deadline: "2026-10-05",
+    description: "Write, debate, discuss, and explore ideas that matter.",
+    about: "A place for readers, writers, speakers, and students who enjoy exploring ideas through language.",
+    activities: ["Writing circles and open mics", "Debates and discussions", "Campus publications"],
+    criteria: "Open to anyone interested in reading, writing, public speaking, or thoughtful discussion.",
+    roles: ["Writing & Editorial", "Debate", "Public Speaking", "Publication Design"],
+    skills: ["writing", "performing"]
+  }
+];
+
+/* =========================================================
+   STATE
+   ========================================================= */
+
+let activeFilter = "All";
+let saved = new Set();
+let applications = [];
+let currentSociety = null;
+let selectedInterests = new Set();
+let toastTimer = null;
+
+const $ = id => document.getElementById(id);
+
+function getSociety(id) {
+  return societies.find(s => s.id === id);
+}
+
+function daysUntil(dateString) {
+  const now = new Date();
+  const target = new Date(dateString + "T23:59:59");
+  return Math.max(0, Math.ceil((target - now) / 86400000));
+}
+
+function formatDeadline(dateString) {
+  return new Date(dateString + "T12:00:00").toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric"
+  });
+}
+
+function showToast(message) {
+  const el = $("toast");
+  el.textContent = message;
+  el.classList.add("show");
+
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), 2600);
+}
+
+function openModal(id) {
+  $(id).classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+
+function closeModal(id) {
+  $(id).classList.remove("show");
+
+  if (!document.querySelector(".modal-backdrop.show")) {
+    document.body.style.overflow = "";
+  }
+}
+
+/* =========================================================
+   SOCIETY CARDS
+   ========================================================= */
+
+function renderSocieties() {
+  const query = $("searchInput").value.trim().toLowerCase();
+
+  let results = societies.filter(s => {
+    const matchesCategory = activeFilter === "All" || s.category === activeFilter;
+
+    const searchable = [
+      s.name,
+      s.category,
+      s.description,
+      s.about,
+      s.criteria,
+      ...s.roles,
+      ...s.activities
+    ].join(" ").toLowerCase();
+
+    return matchesCategory && searchable.includes(query);
+  });
+
+  if (activeFilter === "All" && !query) {
+    results.sort((a, b) => b.match - a.match);
+  }
+
+  const grid = $("societyGrid");
+
+  if (!results.length) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <h3>No societies found</h3>
+        Try another search term or select a different category.
+        <br><br>
+        <button class="primary-button" id="emptyReset">Reset search</button>
+      </div>
+    `;
+
+    $("emptyReset").addEventListener("click", resetFilters);
+    return;
+  }
+
+  grid.innerHTML = results.map((s, index) => `
+    <article class="society-card" style="animation-delay:${index * 45}ms">
+      <div class="card-cover" style="--cover:${s.cover}">
+        <div class="cover-shape"></div>
+        <span class="card-emoji">${s.emoji}</span>
+        <span class="match-badge">${s.match}% interest match</span>
+      </div>
+
+      <div class="card-body">
+        <div class="category-label">${s.category}</div>
+        <h3>${s.name}</h3>
+        <p class="card-description">${s.description}</p>
+
+        <div class="card-meta">
+          <span>♙ ${s.open} open roles</span>
+          <span>◷ ${s.hours} hrs/week</span>
+        </div>
+
+        <div class="card-footer">
+          <span class="open-label">● Recruiting</span>
+          <div class="card-actions">
+            <button class="secondary-button" data-details="${s.id}">Explore →</button>
+            <button class="save-button ${saved.has(s.id) ? "saved" : ""}"
+              data-save="${s.id}"
+              aria-label="${saved.has(s.id) ? "Unsave" : "Save"} ${s.name}">
+              ${saved.has(s.id) ? "♥" : "♡"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </article>
+  `).join("");
+}
+
+function resetFilters() {
+  activeFilter = "All";
+  $("searchInput").value = "";
+
+  document.querySelectorAll("[data-filter]").forEach(button => {
+    button.classList.toggle("active", button.dataset.filter === "All");
+  });
+
+  renderSocieties();
+}
+
+$("searchInput").addEventListener("input", renderSocieties);
+
+$("filters").addEventListener("click", event => {
+  const button = event.target.closest("[data-filter]");
+  if (!button) return;
+
+  activeFilter = button.dataset.filter;
+
+  document.querySelectorAll("[data-filter]").forEach(item => {
+    item.classList.toggle("active", item === button);
+  });
+
+  renderSocieties();
+});
+
+$("resetFilters").addEventListener("click", resetFilters);
+
+$("societyGrid").addEventListener("click", event => {
+  const detailsButton = event.target.closest("[data-details]");
+  const saveButton = event.target.closest("[data-save]");
+
+  if (detailsButton) showDetails(detailsButton.dataset.details);
+  if (saveButton) toggleSaved(saveButton.dataset.save);
+});
+
+/* =========================================================
+   SAVE / UNSAVE
+   ========================================================= */
+
+function toggleSaved(id) {
+  const society = getSociety(id);
+  if (!society) return;
+
+  if (saved.has(id)) {
+    saved.delete(id);
+    showToast(`${society.name} removed from your saved list.`);
+  } else {
+    saved.add(id);
+    showToast(`${society.name} saved!`);
+  }
+
+  $("savedCount").textContent = saved.size;
+  renderSocieties();
+}
+
+/* =========================================================
+   DETAILS VIEW
+   ========================================================= */
+
+function showDetails(id) {
+  const s = getSociety(id);
+  if (!s) return;
+
+  currentSociety = s;
+
+  $("detailsCategory").textContent = s.category;
+  $("detailsTitle").textContent = s.name;
+  $("detailsDescription").textContent = s.description;
+  $("detailsOpen").textContent = s.open;
+  $("detailsHours").textContent = s.hours;
+  $("detailsDeadline").textContent = daysUntil(s.deadline);
+  $("detailsAbout").textContent = s.about;
+  $("detailsCriteria").textContent = s.criteria;
+
+  $("detailsActivities").innerHTML = s.activities.map(item => `<li>${item}</li>`).join("");
+  $("detailsRoles").innerHTML = s.roles.map(item => `<li>${item}</li>`).join("");
+
+  $("detailsSave").textContent = saved.has(id) ? "♥ Saved" : "♡ Save society";
+
+  $("detailsApply").textContent = applications.some(a => a.societyId === id)
+    ? "Already applied ✓"
+    : "Apply now →";
+
+  $("detailsApply").disabled = applications.some(a => a.societyId === id);
+
+  openModal("detailsBackdrop");
+}
+
+$("detailsSave").addEventListener("click", () => {
+  if (!currentSociety) return;
+
+  toggleSaved(currentSociety.id);
+  $("detailsSave").textContent = saved.has(currentSociety.id) ? "♥ Saved" : "♡ Save society";
+});
+
+$("detailsApply").addEventListener("click", () => {
+  if (!currentSociety) return;
+
+  if (applications.some(a => a.societyId === currentSociety.id)) {
+    showToast("You've already applied to this society.");
+    return;
+  }
+
+  closeModal("detailsBackdrop");
+  openApplicationForm(currentSociety);
+});
+
+/* =========================================================
+   APPLICATION FORM + INLINE VALIDATION
+   ========================================================= */
+
+function openApplicationForm(society) {
+  currentSociety = society;
+
+  $("applyTitle").textContent = `Apply to ${society.name}`;
+  $("applySubtitle").textContent = "Complete the form below. This demo records your application locally.";
+
+  $("appRole").innerHTML = `
+    <option value="">Choose a role</option>
+    ${society.roles.map(role => `<option value="${role}">${role}</option>`).join("")}
+  `;
+
+  $("applicationForm").reset();
+  $("charCount").textContent = "0 / 600 characters";
+  clearFormErrors();
+
+  $("applicationFormView").style.display = "block";
+  $("successScreen").classList.remove("show");
+
+  openModal("applyBackdrop");
+  setTimeout(() => $("appName").focus(), 50);
+}
+
+function clearFormErrors() {
+  ["name", "year", "branch", "role", "why"].forEach(key => {
+    $(key + "Error").textContent = "";
+  });
+
+  $("formError").classList.remove("show");
+}
+
+function setFieldError(field, message) {
+  $(field + "Error").textContent = message;
+}
+
+function validateApplication() {
+  clearFormErrors();
+
+  let valid = true;
+
+  const name = $("appName").value.trim();
+  const year = $("appYear").value;
+  const branch = $("appBranch").value.trim();
+  const role = $("appRole").value;
+  const why = $("appWhy").value.trim();
+
+  if (name.length < 2) {
+    setFieldError("name", "Please enter your full name (at least 2 characters).");
+    valid = false;
+  }
+
+  if (!year) {
+    setFieldError("year", "Please select your year of study.");
+    valid = false;
+  }
+
+  if (branch.length < 2) {
+    setFieldError("branch", "Please enter your branch.");
+    valid = false;
+  }
+
+  if (!role) {
+    setFieldError("role", "Please select a role.");
+    valid = false;
+  }
+
+  if (why.length < 20) {
+    setFieldError("why", "Please write at least 20 characters about why you want to join.");
+    valid = false;
+  } else if (why.length > 600) {
+    setFieldError("why", "Please keep your response under 600 characters.");
+    valid = false;
+  }
+
+  if (!valid) {
+    $("formError").textContent = "Please correct the highlighted fields before submitting.";
+    $("formError").classList.add("show");
+
+    const firstError = document.querySelector(".field-error:not(:empty)");
+    if (firstError) {
+      const field = firstError.previousElementSibling;
+      if (field && typeof field.focus === "function") field.focus();
+    }
+  }
+
+  return valid;
+}
+
+$("appWhy").addEventListener("input", () => {
+  $("charCount").textContent = `${$("appWhy").value.length} / 600 characters`;
+
+  if ($("appWhy").value.trim().length >= 20) {
+    $("whyError").textContent = "";
+  }
+});
+
+$("applicationForm").addEventListener("submit", event => {
+  event.preventDefault();
+
+  if (!currentSociety || !validateApplication()) return;
+
+  const application = {
+    id: Date.now(),
+    societyId: currentSociety.id,
+    societyName: currentSociety.name,
+    name: $("appName").value.trim(),
+    year: $("appYear").value,
+    branch: $("appBranch").value.trim(),
+    role: $("appRole").value,
+    why: $("appWhy").value.trim(),
+    date: new Date().toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric"
+    }),
+    status: "Submitted"
+  };
+
+  applications.unshift(application);
+  updateDashboard();
+
+  $("applicationFormView").style.display = "none";
+  $("successScreen").classList.add("show");
+
+  $("successMessage").textContent =
+    `Your demo application for ${application.role} at ${application.societyName} has been recorded in this browser.`;
+});
+
+$("successDone").addEventListener("click", () => {
+  closeModal("applyBackdrop");
+  $("applications").scrollIntoView({ behavior: "smooth" });
+});
+
+/* =========================================================
+   APPLICATION TRACKER
+   ========================================================= */
+
+function updateDashboard() {
+  $("savedCount").textContent = saved.size;
+  $("applicationCount").textContent = applications.length;
+  renderApplications();
+}
+
+function renderApplications() {
+  const list = $("applicationList");
+
+  if (!applications.length) {
+    list.innerHTML = `
+      <div class="empty-state">
+        <h3>No applications yet</h3>
+        Explore societies and apply to get started.
+      </div>
+    `;
+    return;
+  }
+
+  list.innerHTML = applications.map(app => `
+    <div class="application-item">
+      <div class="date-box">${getSociety(app.societyId)?.emoji || "📄"}<small>${app.date}</small></div>
+      <div class="item-info">
+        <strong>${app.societyName}</strong>
+        <small>${app.role} · ${app.year} · ${app.branch}</small>
+      </div>
+      <span class="application-status status-review">${app.status}</span>
+      <button data-view-application="${app.id}" aria-label="View application details">→</button>
+    </div>
+  `).join("");
+}
+
+$("applicationList").addEventListener("click", event => {
+  const button = event.target.closest("[data-view-application]");
+  if (!button) return;
+
+  const app = applications.find(a => a.id === Number(button.dataset.viewApplication));
+  if (!app) return;
+
+  showToast(`${app.societyName} · ${app.role} · ${app.status}`);
+});
+
+$("clearApplications").addEventListener("click", () => {
+  if (!applications.length) {
+    showToast("There are no applications to clear.");
+    return;
+  }
+
+  applications = [];
+  updateDashboard();
+  renderSocieties();
+  showToast("Demo applications cleared.");
+});
+
+/* =========================================================
+   RECRUITMENT TIMELINE + LIVE COUNTDOWN
+   ========================================================= */
+
+function renderTimeline() {
+  const list = $("timelineList");
+
+  const sorted = [...societies].sort((a,b) =>
+    new Date(a.deadline) - new Date(b.deadline)
+  );
+
+  list.innerHTML = sorted.map(s => {
+    const days = daysUntil(s.deadline);
+
+    return `
+      <div class="deadline-item">
+        <div class="date-box">
+          ${formatDeadline(s.deadline)}
+          <small>${days === 0 ? "TODAY" : `${days} DAYS`}</small>
+        </div>
+        <div class="item-info">
+          <strong>${s.name}</strong>
+          <small>Application deadline · ${s.open} open roles</small>
+        </div>
+        <button class="secondary-button" data-timeline-details="${s.id}">View</button>
+      </div>
+    `;
+  }).join("");
+}
+
+$("timelineList").addEventListener("click", event => {
+  const button = event.target.closest("[data-timeline-details]");
+  if (button) showDetails(button.dataset.timelineDetails);
+});
+
+/* =========================================================
+   SOCIETY MATCH QUIZ
+   ========================================================= */
+
+$("quizOptions").addEventListener("click", event => {
+  const button = event.target.closest("[data-interest]");
+  if (!button) return;
+
+  const interest = button.dataset.interest;
+
+  if (selectedInterests.has(interest)) {
+    selectedInterests.delete(interest);
+    button.classList.remove("selected");
+  } else {
+    selectedInterests.add(interest);
+    button.classList.add("selected");
+  }
+
+  $("quizResult").classList.remove("show");
+});
+
+$("findMatch").addEventListener("click", () => {
+  const result = $("quizResult");
+
+  if (!selectedInterests.size) {
+    result.innerHTML = "<strong>Choose at least one interest first.</strong><br>Select what sounds exciting to you.";
+    result.classList.add("show");
+    return;
+  }
+
+  const ranked = societies.map(s => {
+    const score = s.skills.filter(skill => selectedInterests.has(skill)).length;
+    return { society: s, score };
+  }).filter(item => item.score > 0)
+    .sort((a,b) => b.score - a.score || b.society.match - a.society.match);
+
+  if (!ranked.length) {
+    result.textContent = "No exact match yet. Try selecting a different interest.";
+    result.classList.add("show");
+    return;
+  }
+
+  const best = ranked[0].society;
+
+  result.innerHTML = `
+    <strong>Your match: ${best.name} ${best.emoji}</strong><br>
+    ${best.description}
+    <button id="quizOpenMatch">Explore this society →</button>
+  `;
+
+  result.classList.add("show");
+
+  $("quizOpenMatch").addEventListener("click", () => showDetails(best.id));
+});
+
+/* =========================================================
+   DARK MODE
+   ========================================================= */
+
+$("themeToggle").addEventListener("click", () => {
+  document.body.classList.toggle("dark");
+
+  const isDark = document.body.classList.contains("dark");
+  $("themeToggle").textContent = isDark ? "☀" : "☾";
+  $("themeToggle").setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
+
+  showToast(isDark ? "Dark mode enabled." : "Light mode enabled.");
+});
+
+/* =========================================================
+   NAVIGATION + MODAL CONTROLS
+   ========================================================= */
+
+document.querySelectorAll("[data-section]").forEach(button => {
+  button.addEventListener("click", () => {
+    const section = $(button.dataset.section);
+    if (section) section.scrollIntoView({ behavior: "smooth" });
+
+    document.querySelectorAll("[data-section]").forEach(item => {
+      item.classList.toggle("active", item === button);
+    });
+  });
+});
+
+$("sidebarExplore").addEventListener("click", () => {
+  $("discover").scrollIntoView({ behavior: "smooth" });
+});
+
+document.querySelectorAll("[data-close]").forEach(button => {
+  button.addEventListener("click", () => closeModal(button.dataset.close));
+});
+
+document.querySelectorAll(".modal-backdrop").forEach(backdrop => {
+  backdrop.addEventListener("click", event => {
+    if (event.target === backdrop) closeModal(backdrop.id);
+  });
+});
+
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") {
+    document.querySelectorAll(".modal-backdrop.show").forEach(modal => {
+      closeModal(modal.id);
+    });
+  }
+
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+    event.preventDefault();
+    $("searchInput").focus();
+  }
+});
+
+/* =========================================================
+   INITIALIZATION
+   ========================================================= */
+
+function initialize() {
+  $("totalSocieties").textContent = societies.length;
+
+  renderSocieties();
+  renderTimeline();
+  renderApplications();
+  updateDashboard();
+}
+
+initialize();
+</script>
+</body>
+</html>
